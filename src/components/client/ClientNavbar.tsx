@@ -64,13 +64,13 @@ const ClientNavbar = () => {
             ))}
           </div>
 
-          {/* Admin Button */}
+          {/* Login Button */}
           <div className="flex items-center gap-4">
             <Link
-              to="/admin"
+              to="/login"
               className="hidden sm:flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground rounded-lg font-medium text-sm hover:bg-primary/90 transition-all duration-300 shimmer"
             >
-              Admin Portal
+              Login
             </Link>
             
             {/* Mobile Menu Button */}

@@ -8,6 +8,11 @@ export const mockProducts: Product[] = [
     price: 12500,
     category: 'Rings',
     imageUrl: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400&h=400&fit=crop',
+    imageUrls: [
+      'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=800&h=800&fit=crop',
+      'https://images.unsplash.com/photo-1603561591411-07134e71a2a9?w=800&h=800&fit=crop',
+      'https://images.unsplash.com/photo-1602751584552-8ba73aad10e1?w=800&h=800&fit=crop'
+    ],
     inStock: true,
     minOrder: 5,
     createdAt: '2024-01-15',
@@ -20,6 +25,10 @@ export const mockProducts: Product[] = [
     price: 8900,
     category: 'Necklaces',
     imageUrl: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400&h=400&fit=crop',
+    imageUrls: [
+      'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=800&h=800&fit=crop',
+      'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=800&h=800&fit=crop'
+    ],
     inStock: true,
     minOrder: 3,
     createdAt: '2024-01-10',
@@ -32,6 +41,11 @@ export const mockProducts: Product[] = [
     price: 15800,
     category: 'Bracelets',
     imageUrl: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=400&h=400&fit=crop',
+    imageUrls: [
+      'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=800&h=800&fit=crop',
+      'https://images.unsplash.com/photo-1573408301185-9146fe634ad0?w=800&h=800&fit=crop',
+      'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=800&h=800&fit=crop'
+    ],
     inStock: true,
     minOrder: 2,
     createdAt: '2024-01-08',
@@ -44,6 +58,9 @@ export const mockProducts: Product[] = [
     price: 6500,
     category: 'Earrings',
     imageUrl: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=400&h=400&fit=crop',
+    imageUrls: [
+      'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=800&h=800&fit=crop'
+    ],
     inStock: true,
     minOrder: 10,
     createdAt: '2024-01-05',
@@ -56,6 +73,10 @@ export const mockProducts: Product[] = [
     price: 7200,
     category: 'Necklaces',
     imageUrl: 'https://images.unsplash.com/photo-1602751584552-8ba73aad10e1?w=400&h=400&fit=crop',
+    imageUrls: [
+      'https://images.unsplash.com/photo-1602751584552-8ba73aad10e1?w=800&h=800&fit=crop',
+      'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=800&h=800&fit=crop'
+    ],
     inStock: false,
     minOrder: 5,
     createdAt: '2024-01-03',
@@ -68,6 +89,12 @@ export const mockProducts: Product[] = [
     price: 9800,
     category: 'Rings',
     imageUrl: 'https://images.unsplash.com/photo-1603561591411-07134e71a2a9?w=400&h=400&fit=crop',
+    imageUrls: [
+      'https://images.unsplash.com/photo-1603561591411-07134e71a2a9?w=800&h=800&fit=crop',
+      'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=800&h=800&fit=crop',
+      'https://images.unsplash.com/photo-1573408301185-9146fe634ad0?w=800&h=800&fit=crop',
+      'https://images.unsplash.com/photo-1602751584552-8ba73aad10e1?w=800&h=800&fit=crop'
+    ],
     inStock: true,
     minOrder: 4,
     createdAt: '2024-01-01',
