@@ -9,6 +9,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LoadingScreen from '@/components/LoadingScreen';
 
+// Auth pages
+import LoginPage from '@/pages/auth/LoginPage';
+
 // Client pages
 import ClientLayout from '@/components/client/ClientLayout';
 import HomePage from '@/pages/client/HomePage';
@@ -56,6 +59,9 @@ const AppContent = () => {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Auth Routes */}
+        <Route path="/login" element={<LoginPage />} />
+
         {/* Client Routes */}
         <Route path="/" element={<ClientLayout />}>
           <Route index element={<HomePage />} />

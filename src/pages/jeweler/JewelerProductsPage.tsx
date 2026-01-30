@@ -7,6 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import ProductDetailsModal from '@/components/product/ProductDetailsModal';
+import { Product, JewelerProduct } from '@/store/types';
 
 type SortOption = 'newest' | 'oldest' | 'price-low' | 'price-high' | 'name-asc' | 'name-desc';
 type ViewMode = 'grid' | 'list';
@@ -17,7 +19,8 @@ const JewelerProductsPage = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [sortBy, setSortBy] = useState<SortOption>('newest');
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
-  const [showFilters, setShowFilters] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | JewelerProduct | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Get all data from Redux
   const products = useAppSelector(state => state.app.products);
@@ -90,6 +93,11 @@ const JewelerProductsPage = () => {
 
     return result;
   }, [visibleProducts, searchQuery, selectedCategory, sortBy]);
+
+  const handleProductClick = (product: Product | JewelerProduct) => {
+    setSelectedProduct(product);
+    setIsModalOpen(true);
+  };
 
   return (
     <div className="min-h-screen py-12 px-6">
@@ -222,14 +230,21 @@ const JewelerProductsPage = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
-                className="group glass-card rounded-2xl overflow-hidden hover:border-primary/30 transition-all duration-300"
+                onClick={() => handleProductClick(product)}
+                className="group glass-card rounded-2xl overflow-hidden hover:border-primary/30 transition-all duration-300 cursor-pointer"
               >
-                <div className="aspect-square overflow-hidden">
+                <div className="aspect-square overflow-hidden relative">
                   <img
-                    src={product.imageUrl}
+                    src={product.imageUrls?.[0] || product.imageUrl}
                     alt={product.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
+                  {/* Image Count Badge */}
+                  {product.imageUrls && product.imageUrls.length > 1 && (
+                    <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/60 backdrop-blur-sm rounded-full text-white text-xs">
+                      1/{product.imageUrls.length}
+                    </div>
+                  )}
                 </div>
                 <div className="p-4">
                   <Badge variant="outline" className="mb-2 text-xs">
@@ -245,12 +260,9 @@ const JewelerProductsPage = () => {
                     <span className={`text-sm font-medium ${product.inStock ? 'text-green-500' : 'text-red-500'}`}>
                       {product.inStock ? 'In Stock' : 'Out of Stock'}
                     </span>
-                    <Link
-                      to={`/shop/${shopId}/contact`}
-                      className="text-sm font-medium text-primary hover:underline"
-                    >
-                      Inquire
-                    </Link>
+                    <span className="text-sm font-medium text-primary hover:underline">
+                      View Details
+                    </span>
                   </div>
                 </div>
               </motion.div>
@@ -264,15 +276,21 @@ const JewelerProductsPage = () => {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.05 }}
-                className="glass-card rounded-2xl overflow-hidden hover:border-primary/30 transition-all duration-300"
+                onClick={() => handleProductClick(product)}
+                className="glass-card rounded-2xl overflow-hidden hover:border-primary/30 transition-all duration-300 cursor-pointer"
               >
                 <div className="flex flex-col sm:flex-row">
-                  <div className="w-full sm:w-48 h-48 sm:h-auto shrink-0">
+                  <div className="w-full sm:w-48 h-48 sm:h-auto shrink-0 relative">
                     <img
-                      src={product.imageUrl}
+                      src={product.imageUrls?.[0] || product.imageUrl}
                       alt={product.name}
                       className="w-full h-full object-cover"
                     />
+                    {product.imageUrls && product.imageUrls.length > 1 && (
+                      <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/60 backdrop-blur-sm rounded-full text-white text-xs">
+                        +{product.imageUrls.length - 1} more
+                      </div>
+                    )}
                   </div>
                   <div className="flex-1 p-6">
                     <div className="flex items-start justify-between gap-4 mb-2">
@@ -293,12 +311,9 @@ const JewelerProductsPage = () => {
                       <span className="text-sm text-muted-foreground">
                         Min. Order: {product.minOrder} units
                       </span>
-                      <Link
-                        to={`/shop/${shopId}/contact`}
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-all"
-                      >
-                        Contact for Pricing
-                      </Link>
+                      <span className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-all">
+                        View Details
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -307,6 +322,14 @@ const JewelerProductsPage = () => {
           </div>
         )}
       </div>
+
+      {/* Product Details Modal - No price shown */}
+      <ProductDetailsModal
+        product={selectedProduct}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        showPrice={false}
+      />
     </div>
   );
 };

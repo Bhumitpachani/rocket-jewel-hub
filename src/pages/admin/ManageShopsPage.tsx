@@ -3,8 +3,9 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '@/store';
 import { addJewelerShop, updateJewelerShop, deleteJewelerShop } from '@/store/appSlice';
-import { JewelerShop } from '@/store/types';
-import { Plus, Edit2, Trash2, Search, Store, Mail, Phone, MapPin, ExternalLink, Settings } from 'lucide-react';
+import { addJewelerCredentials, updateJewelerCredentials, deleteJewelerCredentials } from '@/store/authSlice';
+import { JewelerShop, UserCredentials } from '@/store/types';
+import { Plus, Edit2, Trash2, Search, Store, Mail, Phone, MapPin, ExternalLink, Settings, Key, User, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -14,14 +15,19 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 
 const ManageShopsPage = () => {
   const dispatch = useAppDispatch();
   const { jewelerShops } = useAppSelector((state) => state.app);
+  const { users } = useAppSelector((state) => state.auth);
   const [searchTerm, setSearchTerm] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingShop, setEditingShop] = useState<JewelerShop | null>(null);
+  const [isCredentialsDialogOpen, setIsCredentialsDialogOpen] = useState(false);
+  const [selectedShopForCredentials, setSelectedShopForCredentials] = useState<JewelerShop | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -34,11 +40,21 @@ const ManageShopsPage = () => {
     isActive: true
   });
 
+  const [credentialsForm, setCredentialsForm] = useState({
+    username: '',
+    password: ''
+  });
+
   const filteredShops = jewelerShops.filter(shop =>
     shop.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     shop.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
     shop.ownerName.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Get credentials for a specific shop
+  const getShopCredentials = (shopId: string): UserCredentials | undefined => {
+    return users.find(u => u.role === 'jeweler_admin' && u.jewelerShopId === shopId);
+  };
 
   const openCreateDialog = () => {
     setEditingShop(null);
@@ -70,6 +86,25 @@ const ManageShopsPage = () => {
     setIsDialogOpen(true);
   };
 
+  const openCredentialsDialog = (shop: JewelerShop) => {
+    setSelectedShopForCredentials(shop);
+    const existingCredentials = getShopCredentials(shop.id);
+    if (existingCredentials) {
+      setCredentialsForm({
+        username: existingCredentials.username,
+        password: existingCredentials.password
+      });
+    } else {
+      // Generate default credentials
+      const defaultUsername = shop.name.toLowerCase().replace(/\s+/g, '_');
+      setCredentialsForm({
+        username: defaultUsername,
+        password: ''
+      });
+    }
+    setIsCredentialsDialogOpen(true);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -98,8 +133,42 @@ const ManageShopsPage = () => {
     setIsDialogOpen(false);
   };
 
+  const handleCredentialsSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!selectedShopForCredentials || !credentialsForm.username || !credentialsForm.password) {
+      toast.error('Please fill in all fields');
+      return;
+    }
+
+    const existingCredentials = getShopCredentials(selectedShopForCredentials.id);
+    
+    if (existingCredentials) {
+      dispatch(updateJewelerCredentials({
+        id: existingCredentials.id,
+        username: credentialsForm.username,
+        password: credentialsForm.password
+      }));
+      toast.success('Credentials updated successfully!');
+    } else {
+      dispatch(addJewelerCredentials({
+        username: credentialsForm.username,
+        password: credentialsForm.password,
+        jewelerShopId: selectedShopForCredentials.id
+      }));
+      toast.success('Credentials created successfully!');
+    }
+
+    setIsCredentialsDialogOpen(false);
+  };
+
   const handleDelete = (id: string) => {
     if (confirm('Are you sure you want to delete this shop?')) {
+      // Also delete credentials
+      const credentials = getShopCredentials(id);
+      if (credentials) {
+        dispatch(deleteJewelerCredentials(credentials.id));
+      }
       dispatch(deleteJewelerShop(id));
       toast.success('Shop deleted successfully!');
     }
@@ -143,86 +212,102 @@ const ManageShopsPage = () => {
       {/* Shops Grid */}
       {filteredShops.length > 0 ? (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredShops.map((shop, index) => (
-            <motion.div
-              key={shop.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.03 }}
-              className="glass-card rounded-2xl p-6"
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-secondary rounded-xl flex items-center justify-center">
-                    <Store className="w-6 h-6 text-primary" />
+          {filteredShops.map((shop, index) => {
+            const hasCredentials = !!getShopCredentials(shop.id);
+            return (
+              <motion.div
+                key={shop.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.03 }}
+                className="glass-card rounded-2xl p-6"
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-secondary rounded-xl flex items-center justify-center">
+                      <Store className="w-6 h-6 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold">{shop.name}</h3>
+                      <p className="text-sm text-muted-foreground">{shop.ownerName}</p>
+                    </div>
                   </div>
+                  <span className={`text-xs px-2 py-1 rounded-full ${
+                    shop.isActive ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'
+                  }`}>
+                    {shop.isActive ? 'Active' : 'Inactive'}
+                  </span>
+                </div>
+
+                <div className="space-y-2 text-sm mb-4">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Mail className="w-4 h-4" />
+                    <span className="truncate">{shop.email}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Phone className="w-4 h-4" />
+                    <span>{shop.phone}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <MapPin className="w-4 h-4" />
+                    <span>{shop.city}, {shop.state}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Key className="w-4 h-4" />
+                    <span className={hasCredentials ? 'text-green-400' : 'text-amber-400'}>
+                      {hasCredentials ? 'Login credentials set' : 'No login credentials'}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between pt-4 border-t border-border">
                   <div>
-                    <h3 className="font-semibold">{shop.name}</h3>
-                    <p className="text-sm text-muted-foreground">{shop.ownerName}</p>
+                    <span className="text-2xl font-bold text-gradient">{shop.totalOrders}</span>
+                    <span className="text-sm text-muted-foreground ml-1">orders</span>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => openCredentialsDialog(shop)}
+                      className="p-2 bg-amber-500/20 rounded-lg hover:bg-amber-500/30 transition-colors"
+                      title="Manage Login"
+                    >
+                      <Key className="w-4 h-4 text-amber-400" />
+                    </button>
+                    <Link
+                      to={`/jeweler-admin/${shop.id}`}
+                      className="p-2 bg-primary/20 rounded-lg hover:bg-primary/30 transition-colors"
+                      title="Jeweler Admin"
+                    >
+                      <Settings className="w-4 h-4 text-primary" />
+                    </Link>
+                    <a
+                      href={`/shop/${shop.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-2 bg-secondary rounded-lg hover:bg-accent transition-colors"
+                      title="View Store"
+                    >
+                      <ExternalLink className="w-4 h-4 text-foreground" />
+                    </a>
+                    <button
+                      onClick={() => openEditDialog(shop)}
+                      className="p-2 bg-secondary rounded-lg hover:bg-accent transition-colors"
+                      title="Edit Shop"
+                    >
+                      <Edit2 className="w-4 h-4 text-primary" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(shop.id)}
+                      className="p-2 bg-destructive/20 rounded-lg hover:bg-destructive/30 transition-colors"
+                      title="Delete Shop"
+                    >
+                      <Trash2 className="w-4 h-4 text-destructive" />
+                    </button>
                   </div>
                 </div>
-                <span className={`text-xs px-2 py-1 rounded-full ${
-                  shop.isActive ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'
-                }`}>
-                  {shop.isActive ? 'Active' : 'Inactive'}
-                </span>
-              </div>
-
-              <div className="space-y-2 text-sm mb-4">
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Mail className="w-4 h-4" />
-                  <span className="truncate">{shop.email}</span>
-                </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Phone className="w-4 h-4" />
-                  <span>{shop.phone}</span>
-                </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <MapPin className="w-4 h-4" />
-                  <span>{shop.city}, {shop.state}</span>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between pt-4 border-t border-border">
-                <div>
-                  <span className="text-2xl font-bold text-gradient">{shop.totalOrders}</span>
-                  <span className="text-sm text-muted-foreground ml-1">orders</span>
-                </div>
-                <div className="flex gap-2">
-                  <Link
-                    to={`/jeweler-admin/${shop.id}`}
-                    className="p-2 bg-primary/20 rounded-lg hover:bg-primary/30 transition-colors"
-                    title="Jeweler Admin"
-                  >
-                    <Settings className="w-4 h-4 text-primary" />
-                  </Link>
-                  <a
-                    href={`/shop/${shop.id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-2 bg-secondary rounded-lg hover:bg-accent transition-colors"
-                    title="View Store"
-                  >
-                    <ExternalLink className="w-4 h-4 text-foreground" />
-                  </a>
-                  <button
-                    onClick={() => openEditDialog(shop)}
-                    className="p-2 bg-secondary rounded-lg hover:bg-accent transition-colors"
-                    title="Edit Shop"
-                  >
-                    <Edit2 className="w-4 h-4 text-primary" />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(shop.id)}
-                    className="p-2 bg-destructive/20 rounded-lg hover:bg-destructive/30 transition-colors"
-                    title="Delete Shop"
-                  >
-                    <Trash2 className="w-4 h-4 text-destructive" />
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            );
+          })}
         </div>
       ) : (
         <motion.div
@@ -345,6 +430,75 @@ const ManageShopsPage = () => {
               </Button>
               <Button type="submit" className="flex-1 shimmer">
                 {editingShop ? 'Update' : 'Create'}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Credentials Dialog */}
+      <Dialog open={isCredentialsDialogOpen} onOpenChange={setIsCredentialsDialogOpen}>
+        <DialogContent className="bg-card border-border max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-display text-xl">
+              Manage Login Credentials
+            </DialogTitle>
+            {selectedShopForCredentials && (
+              <p className="text-sm text-muted-foreground">
+                For: {selectedShopForCredentials.name}
+              </p>
+            )}
+          </DialogHeader>
+
+          <form onSubmit={handleCredentialsSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">Username *</label>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <Input
+                  value={credentialsForm.username}
+                  onChange={(e) => setCredentialsForm({ ...credentialsForm, username: e.target.value })}
+                  placeholder="Enter username"
+                  required
+                  className="pl-10 bg-secondary border-border"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Password *</label>
+              <div className="relative">
+                <Key className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <Input
+                  type={showPassword ? 'text' : 'password'}
+                  value={credentialsForm.password}
+                  onChange={(e) => setCredentialsForm({ ...credentialsForm, password: e.target.value })}
+                  placeholder="Enter password"
+                  required
+                  className="pl-10 pr-10 bg-secondary border-border"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
+              </div>
+            </div>
+
+            <div className="p-3 rounded-lg bg-secondary/50 text-sm">
+              <p className="text-muted-foreground">
+                These credentials will be used by the jeweler to log in to their admin dashboard at <code className="text-primary">/login</code>
+              </p>
+            </div>
+
+            <div className="flex gap-3 pt-4">
+              <Button type="button" variant="outline" onClick={() => setIsCredentialsDialogOpen(false)} className="flex-1">
+                Cancel
+              </Button>
+              <Button type="submit" className="flex-1 shimmer">
+                Save Credentials
               </Button>
             </div>
           </form>

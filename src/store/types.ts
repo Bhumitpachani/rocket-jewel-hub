@@ -5,15 +5,25 @@ export interface Product {
   price: number;
   category: string;
   imageUrl: string;
+  imageUrls?: string[]; // Multiple images support
   inStock: boolean;
   minOrder: number;
   createdAt: string;
   updatedAt: string;
 }
 
-export interface JewelerProduct extends Product {
+export interface UserCredentials {
+  id: string;
+  username: string;
+  password: string;
+  role: 'super_admin' | 'jeweler_admin';
+  jewelerShopId?: string;
+}
+
+export interface JewelerProduct extends Omit<Product, 'imageUrls'> {
   jewelerShopId: string;
   isOwnProduct: boolean; // true if created by jeweler, false if from super admin
+  imageUrls?: string[]; // Multiple images support
 }
 
 export interface ProductVisibility {

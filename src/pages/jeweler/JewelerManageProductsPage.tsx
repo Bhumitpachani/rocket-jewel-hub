@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Plus, Eye, EyeOff, Search, Package, Pencil, Trash2, X } from 'lucide-react';
+import { Plus, Eye, EyeOff, Search, Package, Pencil, Trash2, X, Images } from 'lucide-react';
 import { useAppSelector, useAppDispatch } from '@/store';
 import { toggleProductVisibility, addJewelerProduct, updateJewelerProduct, deleteJewelerProduct } from '@/store/appSlice';
 import { Input } from '@/components/ui/input';
@@ -13,7 +13,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { JewelerProduct } from '@/store/types';
+import { JewelerProduct, Product } from '@/store/types';
+import ProductDetailsModal from '@/components/product/ProductDetailsModal';
+import MultiImageUpload from '@/components/product/MultiImageUpload';
 
 const JewelerManageProductsPage = () => {
   const { shopId } = useParams<{ shopId: string }>();
@@ -24,6 +26,8 @@ const JewelerManageProductsPage = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<JewelerProduct | null>(null);
+  const [selectedProductForView, setSelectedProductForView] = useState<Product | JewelerProduct | null>(null);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
 
   // Get data from Redux
   const products = useAppSelector(state => state.app.products);
@@ -84,7 +88,7 @@ const JewelerManageProductsPage = () => {
     description: '',
     price: '',
     category: '',
-    imageUrl: '',
+    imageUrls: [] as string[],
     minOrder: '1',
     inStock: true
   });
@@ -95,7 +99,7 @@ const JewelerManageProductsPage = () => {
       description: '',
       price: '',
       category: '',
-      imageUrl: '',
+      imageUrls: [],
       minOrder: '1',
       inStock: true
     });
@@ -119,7 +123,8 @@ const JewelerManageProductsPage = () => {
       description: formData.description,
       price: parseFloat(formData.price),
       category: formData.category,
-      imageUrl: formData.imageUrl || 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400&h=400&fit=crop',
+      imageUrl: formData.imageUrls[0] || 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400&h=400&fit=crop',
+      imageUrls: formData.imageUrls.length > 0 ? formData.imageUrls : undefined,
       inStock: formData.inStock,
       minOrder: parseInt(formData.minOrder) || 1,
       createdAt: new Date().toISOString().split('T')[0],
@@ -152,7 +157,8 @@ const JewelerManageProductsPage = () => {
       description: formData.description,
       price: parseFloat(formData.price),
       category: formData.category,
-      imageUrl: formData.imageUrl || editingProduct.imageUrl,
+      imageUrl: formData.imageUrls[0] || editingProduct.imageUrl,
+      imageUrls: formData.imageUrls.length > 0 ? formData.imageUrls : undefined,
       inStock: formData.inStock,
       minOrder: parseInt(formData.minOrder) || 1,
       updatedAt: new Date().toISOString().split('T')[0]
@@ -181,10 +187,15 @@ const JewelerManageProductsPage = () => {
       description: product.description,
       price: product.price.toString(),
       category: product.category,
-      imageUrl: product.imageUrl,
+      imageUrls: product.imageUrls || [product.imageUrl],
       minOrder: product.minOrder.toString(),
       inStock: product.inStock
     });
+  };
+
+  const handleViewProduct = (product: Product | JewelerProduct) => {
+    setSelectedProductForView(product);
+    setIsViewModalOpen(true);
   };
 
   return (
@@ -216,7 +227,7 @@ const JewelerManageProductsPage = () => {
               Add Product
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-lg">
+          <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Add New Product</DialogTitle>
             </DialogHeader>
@@ -297,20 +308,35 @@ const JewelerManageProductsPage = () => {
                     className={`glass-card rounded-2xl p-4 ${!visible ? 'opacity-60' : ''}`}
                   >
                     <div className="flex flex-col sm:flex-row gap-4">
-                      <img
-                        src={product.imageUrl}
-                        alt={product.name}
-                        className="w-full sm:w-24 h-24 rounded-xl object-cover"
-                      />
+                      <div 
+                        className="w-full sm:w-24 h-24 rounded-xl overflow-hidden relative cursor-pointer group"
+                        onClick={() => handleViewProduct(product)}
+                      >
+                        <img
+                          src={product.imageUrls?.[0] || product.imageUrl}
+                          alt={product.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                        />
+                        {product.imageUrls && product.imageUrls.length > 1 && (
+                          <div className="absolute bottom-1 right-1 px-1.5 py-0.5 bg-black/60 backdrop-blur-sm rounded text-white text-xs flex items-center gap-1">
+                            <Images className="w-3 h-3" />
+                            {product.imageUrls.length}
+                          </div>
+                        )}
+                      </div>
                       <div className="flex-1">
                         <div className="flex items-start justify-between gap-4">
-                          <div>
+                          <div className="cursor-pointer" onClick={() => handleViewProduct(product)}>
                             <div className="flex items-center gap-2 mb-1">
-                              <h3 className="font-semibold text-foreground">{product.name}</h3>
+                              <h3 className="font-semibold text-foreground hover:text-primary transition-colors">{product.name}</h3>
                               <Badge variant="outline" className="text-xs">Super Admin</Badge>
                             </div>
                             <Badge variant="secondary" className="text-xs mb-2">{product.category}</Badge>
                             <p className="text-sm text-muted-foreground line-clamp-2">{product.description}</p>
+                            {/* Show price in admin */}
+                            <p className="text-sm font-medium text-primary mt-2">
+                              ${product.price.toLocaleString()}
+                            </p>
                           </div>
                           <div className="flex items-center gap-2">
                             <span className="text-sm text-muted-foreground">
@@ -353,20 +379,32 @@ const JewelerManageProductsPage = () => {
                   className="glass-card rounded-2xl p-4"
                 >
                   <div className="flex flex-col sm:flex-row gap-4">
-                    <img
-                      src={product.imageUrl}
-                      alt={product.name}
-                      className="w-full sm:w-24 h-24 rounded-xl object-cover"
-                    />
+                    <div 
+                      className="w-full sm:w-24 h-24 rounded-xl overflow-hidden relative cursor-pointer group"
+                      onClick={() => handleViewProduct(product)}
+                    >
+                      <img
+                        src={product.imageUrls?.[0] || product.imageUrl}
+                        alt={product.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                      />
+                      {product.imageUrls && product.imageUrls.length > 1 && (
+                        <div className="absolute bottom-1 right-1 px-1.5 py-0.5 bg-black/60 backdrop-blur-sm rounded text-white text-xs flex items-center gap-1">
+                          <Images className="w-3 h-3" />
+                          {product.imageUrls.length}
+                        </div>
+                      )}
+                    </div>
                     <div className="flex-1">
                       <div className="flex items-start justify-between gap-4">
-                        <div>
+                        <div className="cursor-pointer" onClick={() => handleViewProduct(product)}>
                           <div className="flex items-center gap-2 mb-1">
-                            <h3 className="font-semibold text-foreground">{product.name}</h3>
+                            <h3 className="font-semibold text-foreground hover:text-primary transition-colors">{product.name}</h3>
                             <Badge className="text-xs bg-primary/20 text-primary">Your Product</Badge>
                           </div>
                           <Badge variant="secondary" className="text-xs mb-2">{product.category}</Badge>
                           <p className="text-sm text-muted-foreground line-clamp-2">{product.description}</p>
+                          {/* Show price in admin */}
                           <p className="text-sm font-medium text-foreground mt-2">
                             ${product.price.toLocaleString()} • Min. Order: {product.minOrder}
                           </p>
@@ -378,7 +416,7 @@ const JewelerManageProductsPage = () => {
                                 <Pencil className="w-4 h-4" />
                               </Button>
                             </DialogTrigger>
-                            <DialogContent className="max-w-lg">
+                            <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
                               <DialogHeader>
                                 <DialogTitle>Edit Product</DialogTitle>
                               </DialogHeader>
@@ -412,6 +450,14 @@ const JewelerManageProductsPage = () => {
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Product Details Modal - Show price in admin view */}
+      <ProductDetailsModal
+        product={selectedProductForView}
+        isOpen={isViewModalOpen}
+        onClose={() => setIsViewModalOpen(false)}
+        showPrice={true}
+      />
     </div>
   );
 };
@@ -423,7 +469,7 @@ interface ProductFormProps {
     description: string;
     price: string;
     category: string;
-    imageUrl: string;
+    imageUrls: string[];
     minOrder: string;
     inStock: boolean;
   };
@@ -432,7 +478,7 @@ interface ProductFormProps {
     description: string;
     price: string;
     category: string;
-    imageUrl: string;
+    imageUrls: string[];
     minOrder: string;
     inStock: boolean;
   }>>;
@@ -504,14 +550,14 @@ const ProductForm = ({ formData, setFormData, categories, onSubmit, onCancel, su
         <span className="text-sm text-foreground">In Stock</span>
       </div>
     </div>
-    <div>
-      <label className="block text-sm font-medium text-foreground mb-2">Image URL</label>
-      <Input
-        value={formData.imageUrl}
-        onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-        placeholder="https://..."
-      />
-    </div>
+    
+    {/* Multiple Image Upload */}
+    <MultiImageUpload
+      images={formData.imageUrls}
+      onImagesChange={(images) => setFormData({ ...formData, imageUrls: images })}
+      maxImages={5}
+    />
+
     <div className="flex justify-end gap-2 pt-4">
       <Button variant="outline" onClick={onCancel}>Cancel</Button>
       <Button onClick={onSubmit}>{submitLabel}</Button>
