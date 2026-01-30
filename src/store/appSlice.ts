@@ -1,10 +1,12 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { AppState, Product, JewelerShop } from './types';
-import { mockProducts, mockJewelerShops, mockDashboardStats } from './mockData';
+import { AppState, Product, JewelerShop, JewelerProduct, ProductVisibility, JewelerSettings } from './types';
+import { mockProducts, mockJewelerShops, mockDashboardStats, mockJewelerProducts, mockProductVisibility } from './mockData';
 
 const initialState: AppState = {
   products: [],
   jewelerShops: [],
+  jewelerProducts: [],
+  productVisibility: [],
   dashboardStats: {
     totalProducts: 0,
     totalShops: 0,
@@ -24,13 +26,11 @@ export const initializeApp = createAsyncThunk(
     // Simulate network delay for realistic feel
     await new Promise(resolve => setTimeout(resolve, 800));
     
-    // In production, this would fetch from Firebase:
-    // const productsSnapshot = await getDocs(collection(db, 'products'));
-    // const shopsSnapshot = await getDocs(collection(db, 'jewelerShops'));
-    
     return {
       products: mockProducts,
       jewelerShops: mockJewelerShops,
+      jewelerProducts: mockJewelerProducts,
+      productVisibility: mockProductVisibility,
       dashboardStats: mockDashboardStats
     };
   }
@@ -88,6 +88,59 @@ const appSlice = createSlice({
       }
       state.jewelerShops = state.jewelerShops.filter(s => s.id !== action.payload);
     },
+
+    // Jeweler Settings actions
+    updateJewelerSettings: (state, action: PayloadAction<{ shopId: string; settings: JewelerSettings }>) => {
+      const index = state.jewelerShops.findIndex(s => s.id === action.payload.shopId);
+      if (index !== -1) {
+        state.jewelerShops[index].settings = action.payload.settings;
+      }
+    },
+
+    // Jeweler Product actions
+    addJewelerProduct: (state, action: PayloadAction<JewelerProduct>) => {
+      state.jewelerProducts.push(action.payload);
+    },
+    updateJewelerProduct: (state, action: PayloadAction<JewelerProduct>) => {
+      const index = state.jewelerProducts.findIndex(p => p.id === action.payload.id);
+      if (index !== -1) {
+        state.jewelerProducts[index] = action.payload;
+      }
+    },
+    deleteJewelerProduct: (state, action: PayloadAction<string>) => {
+      state.jewelerProducts = state.jewelerProducts.filter(p => p.id !== action.payload);
+    },
+
+    // Product Visibility actions
+    toggleProductVisibility: (state, action: PayloadAction<{ productId: string; shopId: string }>) => {
+      const { productId, shopId } = action.payload;
+      const existingIndex = state.productVisibility.findIndex(
+        pv => pv.productId === productId && pv.jewelerShopId === shopId
+      );
+      
+      if (existingIndex !== -1) {
+        state.productVisibility[existingIndex].isVisible = !state.productVisibility[existingIndex].isVisible;
+      } else {
+        // If no visibility setting exists, create one (default to visible, then toggle to hidden)
+        state.productVisibility.push({
+          productId,
+          jewelerShopId: shopId,
+          isVisible: false
+        });
+      }
+    },
+    setProductVisibility: (state, action: PayloadAction<ProductVisibility>) => {
+      const { productId, jewelerShopId, isVisible } = action.payload;
+      const existingIndex = state.productVisibility.findIndex(
+        pv => pv.productId === productId && pv.jewelerShopId === jewelerShopId
+      );
+      
+      if (existingIndex !== -1) {
+        state.productVisibility[existingIndex].isVisible = isVisible;
+      } else {
+        state.productVisibility.push(action.payload);
+      }
+    },
     
     // Error handling
     clearError: (state) => {
@@ -103,6 +156,8 @@ const appSlice = createSlice({
       .addCase(initializeApp.fulfilled, (state, action) => {
         state.products = action.payload.products;
         state.jewelerShops = action.payload.jewelerShops;
+        state.jewelerProducts = action.payload.jewelerProducts;
+        state.productVisibility = action.payload.productVisibility;
         state.dashboardStats = action.payload.dashboardStats;
         state.isLoading = false;
         state.isInitialized = true;
@@ -121,6 +176,12 @@ export const {
   addJewelerShop,
   updateJewelerShop,
   deleteJewelerShop,
+  updateJewelerSettings,
+  addJewelerProduct,
+  updateJewelerProduct,
+  deleteJewelerProduct,
+  toggleProductVisibility,
+  setProductVisibility,
   clearError
 } = appSlice.actions;
 

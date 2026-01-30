@@ -11,6 +11,32 @@ export interface Product {
   updatedAt: string;
 }
 
+export interface JewelerProduct extends Product {
+  jewelerShopId: string;
+  isOwnProduct: boolean; // true if created by jeweler, false if from super admin
+}
+
+export interface ProductVisibility {
+  productId: string;
+  jewelerShopId: string;
+  isVisible: boolean;
+}
+
+export interface JewelerSettings {
+  shopId: string;
+  logo: string;
+  storeName: string;
+  tagline: string;
+  email: string;
+  phone: string;
+  address: string;
+  heroTitle: string;
+  heroSubtitle: string;
+  heroBannerUrl: string;
+  primaryColor: string;
+  accentColor: string;
+}
+
 export interface JewelerShop {
   id: string;
   name: string;
@@ -23,6 +49,7 @@ export interface JewelerShop {
   isActive: boolean;
   joinedDate: string;
   totalOrders: number;
+  settings?: JewelerSettings;
 }
 
 export interface DashboardStats {
@@ -36,6 +63,8 @@ export interface DashboardStats {
 export interface AppState {
   products: Product[];
   jewelerShops: JewelerShop[];
+  jewelerProducts: JewelerProduct[];
+  productVisibility: ProductVisibility[];
   dashboardStats: DashboardStats;
   isLoading: boolean;
   isInitialized: boolean;
