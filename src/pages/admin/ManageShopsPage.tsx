@@ -1,9 +1,10 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '@/store';
 import { addJewelerShop, updateJewelerShop, deleteJewelerShop } from '@/store/appSlice';
 import { JewelerShop } from '@/store/types';
-import { Plus, Edit2, Trash2, Search, Store, Mail, Phone, MapPin } from 'lucide-react';
+import { Plus, Edit2, Trash2, Search, Store, Mail, Phone, MapPin, ExternalLink, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -188,15 +189,33 @@ const ManageShopsPage = () => {
                   <span className="text-sm text-muted-foreground ml-1">orders</span>
                 </div>
                 <div className="flex gap-2">
+                  <Link
+                    to={`/jeweler-admin/${shop.id}`}
+                    className="p-2 bg-primary/20 rounded-lg hover:bg-primary/30 transition-colors"
+                    title="Jeweler Admin"
+                  >
+                    <Settings className="w-4 h-4 text-primary" />
+                  </Link>
+                  <a
+                    href={`/shop/${shop.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 bg-secondary rounded-lg hover:bg-accent transition-colors"
+                    title="View Store"
+                  >
+                    <ExternalLink className="w-4 h-4 text-foreground" />
+                  </a>
                   <button
                     onClick={() => openEditDialog(shop)}
                     className="p-2 bg-secondary rounded-lg hover:bg-accent transition-colors"
+                    title="Edit Shop"
                   >
                     <Edit2 className="w-4 h-4 text-primary" />
                   </button>
                   <button
                     onClick={() => handleDelete(shop.id)}
                     className="p-2 bg-destructive/20 rounded-lg hover:bg-destructive/30 transition-colors"
+                    title="Delete Shop"
                   >
                     <Trash2 className="w-4 h-4 text-destructive" />
                   </button>

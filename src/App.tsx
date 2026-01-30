@@ -22,6 +22,18 @@ import DashboardPage from '@/pages/admin/DashboardPage';
 import ManageProductsPage from '@/pages/admin/ManageProductsPage';
 import ManageShopsPage from '@/pages/admin/ManageShopsPage';
 
+// Jeweler Store pages
+import JewelerStoreLayout from '@/components/jeweler/JewelerStoreLayout';
+import JewelerHomePage from '@/pages/jeweler/JewelerHomePage';
+import JewelerProductsPage from '@/pages/jeweler/JewelerProductsPage';
+import JewelerContactPage from '@/pages/jeweler/JewelerContactPage';
+
+// Jeweler Admin pages
+import JewelerAdminLayout from '@/components/jeweler/JewelerAdminLayout';
+import JewelerDashboardPage from '@/pages/jeweler/JewelerDashboardPage';
+import JewelerManageProductsPage from '@/pages/jeweler/JewelerManageProductsPage';
+import JewelerSettingsPage from '@/pages/jeweler/JewelerSettingsPage';
+
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -52,11 +64,25 @@ const AppContent = () => {
           <Route path="contact" element={<ContactPage />} />
         </Route>
 
-        {/* Admin Routes */}
+        {/* Super Admin Routes */}
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<DashboardPage />} />
           <Route path="products" element={<ManageProductsPage />} />
           <Route path="shops" element={<ManageShopsPage />} />
+        </Route>
+
+        {/* Jeweler Store Routes (Client-facing) */}
+        <Route path="/shop/:shopId" element={<JewelerStoreLayout />}>
+          <Route index element={<JewelerHomePage />} />
+          <Route path="products" element={<JewelerProductsPage />} />
+          <Route path="contact" element={<JewelerContactPage />} />
+        </Route>
+
+        {/* Jeweler Admin Routes */}
+        <Route path="/jeweler-admin/:shopId" element={<JewelerAdminLayout />}>
+          <Route index element={<JewelerDashboardPage />} />
+          <Route path="products" element={<JewelerManageProductsPage />} />
+          <Route path="settings" element={<JewelerSettingsPage />} />
         </Route>
 
         {/* 404 */}
