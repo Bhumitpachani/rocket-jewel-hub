@@ -85,6 +85,7 @@ const JewelerManageProductsPage = () => {
   // Product form state
   const [formData, setFormData] = useState({
     name: '',
+    modelNumber: '',
     description: '',
     price: '',
     category: '',
@@ -96,6 +97,7 @@ const JewelerManageProductsPage = () => {
   const resetForm = () => {
     setFormData({
       name: '',
+      modelNumber: '',
       description: '',
       price: '',
       category: '',
@@ -120,6 +122,7 @@ const JewelerManageProductsPage = () => {
       id: `jp-${Date.now()}`,
       jewelerShopId: shopId!,
       name: formData.name,
+      modelNumber: formData.modelNumber,
       description: formData.description,
       price: parseFloat(formData.price),
       category: formData.category,
@@ -154,6 +157,7 @@ const JewelerManageProductsPage = () => {
     const updatedProduct: JewelerProduct = {
       ...editingProduct,
       name: formData.name,
+      modelNumber: formData.modelNumber,
       description: formData.description,
       price: parseFloat(formData.price),
       category: formData.category,
@@ -184,6 +188,7 @@ const JewelerManageProductsPage = () => {
     setEditingProduct(product);
     setFormData({
       name: product.name,
+      modelNumber: product.modelNumber || '',
       description: product.description,
       price: product.price.toString(),
       category: product.category,
@@ -466,6 +471,7 @@ const JewelerManageProductsPage = () => {
 interface ProductFormProps {
   formData: {
     name: string;
+    modelNumber: string;
     description: string;
     price: string;
     category: string;
@@ -475,6 +481,7 @@ interface ProductFormProps {
   };
   setFormData: React.Dispatch<React.SetStateAction<{
     name: string;
+    modelNumber: string;
     description: string;
     price: string;
     category: string;
@@ -490,13 +497,23 @@ interface ProductFormProps {
 
 const ProductForm = ({ formData, setFormData, categories, onSubmit, onCancel, submitLabel }: ProductFormProps) => (
   <div className="space-y-4">
-    <div>
-      <label className="block text-sm font-medium text-foreground mb-2">Product Name *</label>
-      <Input
-        value={formData.name}
-        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-        placeholder="Enter product name"
-      />
+    <div className="grid grid-cols-2 gap-4">
+      <div>
+        <label className="block text-sm font-medium text-foreground mb-2">Product Name *</label>
+        <Input
+          value={formData.name}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          placeholder="Enter product name"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-foreground mb-2">Model Number</label>
+        <Input
+          value={formData.modelNumber}
+          onChange={(e) => setFormData({ ...formData, modelNumber: e.target.value })}
+          placeholder="e.g. RD-1001"
+        />
+      </div>
     </div>
     <div>
       <label className="block text-sm font-medium text-foreground mb-2">Description</label>
