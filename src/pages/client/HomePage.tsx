@@ -88,149 +88,153 @@ const HomePage = () => {
   return (
     <div className="overflow-hidden">
       {/* Hero Section */}
-      <section className="relative min-h-[100vh] flex items-center pt-20">
+      <section className="relative min-h-screen flex items-center pt-24 pb-12 overflow-hidden">
         {/* Background Elements */}
-        <div className="absolute inset-0 diamond-pattern opacity-30" />
-        <div className="absolute inset-0 bg-gradient-to-br from-background via-background/95 to-accent/10" />
+        <div className="absolute inset-0 diamond-pattern opacity-20 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-br from-background via-background/98 to-accent/5 pointer-events-none" />
         
-        {/* Animated Background Shapes */}
+        {/* Animated Background Shapes - Responsive sizes */}
         <motion.div 
           style={{ y }}
-          className="absolute right-[10%] top-[20%] w-72 h-72 border border-primary/20 rotate-45 rounded-3xl opacity-60"
-          animate={{ rotate: [45, 55, 45], scale: [1, 1.02, 1] }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute right-[5%] top-[15%] w-48 h-48 md:w-72 md:h-72 border border-primary/10 rotate-45 rounded-3xl opacity-40 pointer-events-none hidden sm:block"
+          animate={{ rotate: [45, 55, 45], scale: [1, 1.05, 1] }}
+          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div 
-          className="absolute right-[20%] bottom-[25%] w-40 h-40 bg-primary/5 rotate-45 rounded-2xl"
-          animate={{ rotate: [45, 35, 45], y: [0, -20, 0] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div 
-          className="absolute left-[5%] bottom-[20%] w-24 h-24 border border-primary/10 rotate-12 rounded-xl"
-          animate={{ rotate: [12, 22, 12] }}
-          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute right-[15%] bottom-[20%] w-32 h-32 md:w-56 md:h-56 bg-primary/5 rotate-45 rounded-2xl pointer-events-none hidden md:block"
+          animate={{ rotate: [45, 35, 45], y: [0, -30, 0] }}
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
         />
         
-        <div className="container mx-auto px-6 relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="container mx-auto px-4 md:px-6 relative z-10">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             {/* Left Content */}
             <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
+              className="text-center lg:text-left"
             >
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2, duration: 0.5 }}
+                className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary/5 border border-primary/10 rounded-full text-xs md:text-sm font-medium text-primary mb-8"
               >
-                <span className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-sm font-medium text-primary mb-6">
-                  <Sparkles className="w-4 h-4" />
-                  B2B Diamond Excellence
-                </span>
+                <Sparkles className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                <span>B2B Diamond Excellence</span>
               </motion.div>
               
-              <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-[1.1]">
+              <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 md:mb-8 leading-[1.15] md:leading-[1.1]">
                 <span className="text-gradient">Premium Diamonds</span>
-                <br />
-                <span className="text-foreground">For Exceptional</span>
-                <br />
+                <br className="hidden sm:block" />
+                <span className="text-foreground"> For Exceptional </span>
+                <br className="hidden sm:block" />
                 <span className="text-foreground">Jewelers</span>
               </h1>
               
-              <p className="text-xl text-muted-foreground mb-8 max-w-xl leading-relaxed">
+              <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-xl mx-auto lg:mx-0 leading-relaxed">
                 Partner with Rocket Diamond for unparalleled access to GIA-certified stones, 
                 competitive wholesale pricing, and dedicated B2B support that scales with your business.
               </p>
               
-              <div className="flex flex-col sm:flex-row gap-4 mb-12">
+              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-12">
                 <Link
                   to="/products"
-                  className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-primary text-primary-foreground rounded-xl font-semibold text-lg hover:bg-primary/90 transition-all duration-300 shimmer shadow-lg"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 bg-primary text-primary-foreground rounded-xl font-semibold text-lg hover:bg-primary/90 transition-all duration-300 shadow-lg shadow-primary/20 group"
+                  data-testid="link-explore-collection"
                 >
                   Explore Collection
-                  <ArrowRight className="w-5 h-5" />
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
                 <Link
                   to="/contact"
-                  className="inline-flex items-center justify-center gap-2 px-8 py-4 border-2 border-border text-foreground rounded-xl font-semibold text-lg hover:bg-secondary transition-all duration-300"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 border-2 border-border text-foreground rounded-xl font-semibold text-lg hover:bg-secondary transition-all duration-300"
+                  data-testid="link-become-partner"
                 >
                   Become a Partner
                 </Link>
               </div>
 
-              {/* Trust Badges */}
-              <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5 text-primary" />
+              {/* Trust Badges - Improved responsiveness */}
+              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-y-4 gap-x-8 text-sm font-medium text-muted-foreground/80">
+                <div className="flex items-center gap-2 group">
+                  <CheckCircle className="w-5 h-5 text-primary/70 group-hover:text-primary transition-colors" />
                   <span>GIA Certified</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5 text-primary" />
+                <div className="flex items-center gap-2 group">
+                  <CheckCircle className="w-5 h-5 text-primary/70 group-hover:text-primary transition-colors" />
                   <span>Ethically Sourced</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5 text-primary" />
+                <div className="flex items-center gap-2 group">
+                  <CheckCircle className="w-5 h-5 text-primary/70 group-hover:text-primary transition-colors" />
                   <span>Insured Shipping</span>
                 </div>
               </div>
             </motion.div>
 
-            {/* Right Content - Hero Image */}
+            {/* Right Content - Hero Image - Visible on all screens but styled differently */}
             <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="relative hidden lg:block"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1, delay: 0.3 }}
+              className="relative mt-12 lg:mt-0"
             >
-              <div className="relative">
+              <div className="relative max-w-md mx-auto lg:max-w-none">
                 <motion.div
-                  animate={{ y: [0, -15, 0] }}
-                  transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                  animate={{ y: [0, -20, 0] }}
+                  transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
                   className="relative z-10"
                 >
-                  <img 
-                    src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=600&h=700&fit=crop"
-                    alt="Premium Diamond Jewelry"
-                    className="rounded-3xl shadow-2xl object-cover w-full max-w-lg mx-auto"
-                  />
+                  <div className="relative rounded-[2.5rem] overflow-hidden shadow-2xl shadow-primary/10 border border-primary/10">
+                    <img 
+                      src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=800&h=1000&fit=crop"
+                      alt="Premium Diamond Jewelry"
+                      className="w-full h-auto object-cover transform hover:scale-105 transition-transform duration-700"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-background/20 to-transparent pointer-events-none" />
+                  </div>
                 </motion.div>
                 
-                {/* Floating Stats Card */}
+                {/* Floating Stats Card - Responsive positioning */}
                 <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.6 }}
-                  className="absolute -left-8 bottom-20 glass-card rounded-2xl p-4 shadow-xl"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.8, duration: 0.5 }}
+                  className="absolute -left-4 sm:-left-8 bottom-12 sm:bottom-20 glass-card rounded-2xl p-4 sm:p-5 shadow-xl border border-primary/10 z-20"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center">
-                      <Users className="w-6 h-6 text-primary" />
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary/15 rounded-xl flex items-center justify-center">
+                      <Users className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                     </div>
                     <div>
-                      <p className="text-2xl font-bold text-foreground">500+</p>
-                      <p className="text-sm text-muted-foreground">Partner Jewelers</p>
+                      <p className="text-xl sm:text-2xl font-bold text-foreground">500+</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-wider">Partners</p>
                     </div>
                   </div>
                 </motion.div>
 
-                {/* Floating Quality Card */}
+                {/* Floating Quality Card - Responsive positioning */}
                 <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.8 }}
-                  className="absolute -right-4 top-20 glass-card rounded-2xl p-4 shadow-xl"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 1, duration: 0.5 }}
+                  className="absolute -right-2 sm:-right-4 top-12 sm:top-20 glass-card rounded-2xl p-4 sm:p-5 shadow-xl border border-primary/10 z-20"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center">
-                      <Star className="w-6 h-6 text-primary" />
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary/15 rounded-xl flex items-center justify-center">
+                      <Star className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                     </div>
                     <div>
-                      <p className="text-2xl font-bold text-foreground">99.8%</p>
-                      <p className="text-sm text-muted-foreground">Satisfaction Rate</p>
+                      <p className="text-xl sm:text-2xl font-bold text-foreground">99.8%</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-wider">Rating</p>
                     </div>
                   </div>
                 </motion.div>
+                
+                {/* Decorative Elements */}
+                <div className="absolute -z-10 -top-10 -right-10 w-40 h-40 bg-primary/10 rounded-full blur-3xl" />
+                <div className="absolute -z-10 -bottom-10 -left-10 w-40 h-40 bg-accent/10 rounded-full blur-3xl" />
               </div>
             </motion.div>
           </div>
