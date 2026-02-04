@@ -1,6 +1,7 @@
 import { Outlet, useParams, Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAppSelector } from '@/store';
+import ThemeToggle from '@/components/ThemeToggle';
 
 const JewelerStoreLayout = () => {
   const { shopId } = useParams<{ shopId: string }>();
@@ -98,11 +99,12 @@ const JewelerStoreLayout = () => {
               ))}
             </div>
 
-            {/* Mobile Menu */}
-            <div className="flex items-center gap-4 md:hidden">
+            {/* Right Actions */}
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
               <Link
                 to={`/shop/${shopId}/products`}
-                className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium"
+                className="hidden sm:flex px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
               >
                 View Catalog
               </Link>

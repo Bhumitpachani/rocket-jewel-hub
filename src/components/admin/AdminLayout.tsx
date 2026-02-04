@@ -1,8 +1,9 @@
 import { NavLink, Outlet, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { LayoutDashboard, Package, Store, ArrowLeft, Menu, X } from 'lucide-react';
+import { LayoutDashboard, Package, Store, ArrowLeft, Menu, X, Palette } from 'lucide-react';
 import { useState } from 'react';
 import logo from '@/assets/logo.png';
+import ThemeToggle from '@/components/ThemeToggle';
 
 const AdminLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -10,7 +11,8 @@ const AdminLayout = () => {
   const navItems = [
     { to: '/admin', icon: LayoutDashboard, label: 'Dashboard', exact: true },
     { to: '/admin/products', icon: Package, label: 'Products' },
-    { to: '/admin/shops', icon: Store, label: 'Jeweler Shops' }
+    { to: '/admin/shops', icon: Store, label: 'Jeweler Shops' },
+    { to: '/admin/theme', icon: Palette, label: 'Theme Settings' }
   ];
 
   return (
@@ -98,8 +100,13 @@ const AdminLayout = () => {
               <Menu className="w-6 h-6" />
             </button>
             <img src={logo} alt="Rocket Diamond" className="h-8 w-auto" />
-            <div className="w-10" />
+            <ThemeToggle />
           </div>
+        </header>
+
+        {/* Desktop Header */}
+        <header className="hidden lg:flex sticky top-0 z-30 bg-background/95 backdrop-blur border-b border-border p-4 justify-end">
+          <ThemeToggle />
         </header>
 
         {/* Page Content */}

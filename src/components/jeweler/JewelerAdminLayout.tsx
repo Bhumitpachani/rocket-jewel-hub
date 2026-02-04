@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { LayoutDashboard, Package, Settings, ArrowLeft, Menu, X, ExternalLink } from 'lucide-react';
 import { useState } from 'react';
 import { useAppSelector } from '@/store';
+import ThemeToggle from '@/components/ThemeToggle';
 
 const JewelerAdminLayout = () => {
   const { shopId } = useParams<{ shopId: string }>();
@@ -138,15 +139,23 @@ const JewelerAdminLayout = () => {
               <Menu className="w-6 h-6" />
             </button>
             <span className="font-display font-semibold text-foreground">{storeName}</span>
-            <a
-              href={`/shop/${shopId}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-2 text-muted-foreground"
-            >
-              <ExternalLink className="w-5 h-5" />
-            </a>
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              <a
+                href={`/shop/${shopId}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 text-muted-foreground"
+              >
+                <ExternalLink className="w-5 h-5" />
+              </a>
+            </div>
           </div>
+        </header>
+
+        {/* Desktop Header */}
+        <header className="hidden lg:flex sticky top-0 z-30 bg-background/95 backdrop-blur border-b border-border p-4 justify-end">
+          <ThemeToggle />
         </header>
 
         {/* Page Content */}
