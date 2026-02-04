@@ -8,11 +8,78 @@
 
 @layer base {
   :root {
-    /* Deep Navy - Primary brand color */
+    /* Light Mode - Elegant Cream & Gold */
+    --background: 40 30% 97%;
+    --foreground: 222 47% 11%;
+
+    /* Card surfaces */
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    /* Popover */
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    /* Primary - Gold/Bronze accent */
+    --primary: 36 45% 45%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary */
+    --secondary: 40 20% 92%;
+    --secondary-foreground: 222 47% 11%;
+
+    /* Muted surfaces */
+    --muted: 40 20% 94%;
+    --muted-foreground: 222 20% 45%;
+
+    /* Accent */
+    --accent: 222 30% 20%;
+    --accent-foreground: 0 0% 100%;
+
+    /* Destructive */
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Borders and inputs */
+    --border: 40 15% 85%;
+    --input: 40 15% 85%;
+    --ring: 36 45% 45%;
+
+    --radius: 0.75rem;
+
+    /* Diamond brand colors */
+    --diamond: 36 45% 55%;
+    --diamond-glow: 36 50% 65%;
+    --platinum: 210 15% 70%;
+    --navy-deep: 222 47% 11%;
+    --navy-light: 222 30% 25%;
+
+    /* Gradients */
+    --gradient-diamond: linear-gradient(135deg, hsl(36 45% 55%) 0%, hsl(36 50% 45%) 50%, hsl(36 45% 55%) 100%);
+    --gradient-shimmer: linear-gradient(90deg, transparent, hsl(36 45% 55% / 0.3), transparent);
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%) 0%, hsl(40 20% 97%) 100%);
+
+    /* Shadows */
+    --shadow-glow: 0 0 40px hsl(36 45% 45% / 0.15);
+    --shadow-card: 0 4px 24px hsl(222 47% 11% / 0.08);
+
+    /* Sidebar */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 222 47% 11%;
+    --sidebar-primary: 36 45% 45%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 40 20% 94%;
+    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-border: 40 15% 88%;
+    --sidebar-ring: 36 45% 45%;
+  }
+
+  .dark {
+    /* Dark Mode - Deep Navy & Silver */
     --background: 222 47% 6%;
     --foreground: 210 40% 98%;
 
-    /* Card surfaces - slightly lighter navy */
+    /* Card surfaces */
     --card: 222 44% 8%;
     --card-foreground: 210 40% 98%;
 
@@ -24,7 +91,7 @@
     --primary: 210 20% 80%;
     --primary-foreground: 222 47% 6%;
 
-    /* Secondary - Slate blue */
+    /* Secondary */
     --secondary: 217 33% 17%;
     --secondary-foreground: 210 40% 98%;
 
@@ -32,7 +99,7 @@
     --muted: 217 33% 12%;
     --muted-foreground: 215 20% 65%;
 
-    /* Accent - Diamond shimmer */
+    /* Accent */
     --accent: 200 30% 25%;
     --accent-foreground: 210 40% 98%;
 
@@ -44,8 +111,6 @@
     --border: 217 30% 18%;
     --input: 217 30% 18%;
     --ring: 210 20% 70%;
-
-    --radius: 0.75rem;
 
     /* Diamond brand colors */
     --diamond: 200 25% 85%;
@@ -64,36 +129,6 @@
     --shadow-card: 0 4px 24px hsl(222 47% 2% / 0.5);
 
     /* Sidebar */
-    --sidebar-background: 222 47% 5%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 210 20% 80%;
-    --sidebar-primary-foreground: 222 47% 6%;
-    --sidebar-accent: 217 33% 15%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 217 30% 15%;
-    --sidebar-ring: 210 20% 70%;
-  }
-
-  .dark {
-    --background: 222 47% 6%;
-    --foreground: 210 40% 98%;
-    --card: 222 44% 8%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222 44% 10%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 210 20% 80%;
-    --primary-foreground: 222 47% 6%;
-    --secondary: 217 33% 17%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217 33% 12%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 200 30% 25%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62% 50%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217 30% 18%;
-    --input: 217 30% 18%;
-    --ring: 210 20% 70%;
     --sidebar-background: 222 47% 5%;
     --sidebar-foreground: 210 40% 98%;
     --sidebar-primary: 210 20% 80%;
@@ -143,21 +178,29 @@
     100% { left: 200%; }
   }
 
-  /* Glass card effect */
+  /* Glass card effect - adapts to theme */
   .glass-card {
-    background: linear-gradient(145deg, hsl(222 44% 10% / 0.8) 0%, hsl(222 47% 8% / 0.9) 100%);
+    background: var(--gradient-card);
     backdrop-filter: blur(20px);
-    border: 1px solid hsl(217 30% 20% / 0.5);
+    border: 1px solid hsl(var(--border) / 0.5);
+    box-shadow: var(--shadow-card);
+  }
+
+  /* Light mode glass card override */
+  :root:not(.dark) .glass-card {
+    background: linear-gradient(145deg, hsl(0 0% 100% / 0.9) 0%, hsl(40 20% 98% / 0.95) 100%);
+    border: 1px solid hsl(40 15% 88% / 0.8);
+    box-shadow: 0 4px 24px hsl(222 47% 11% / 0.06);
   }
 
   /* Diamond facet pattern */
   .diamond-pattern {
     background-image: 
-      linear-gradient(30deg, hsl(217 30% 12%) 12%, transparent 12.5%, transparent 87%, hsl(217 30% 12%) 87.5%),
-      linear-gradient(150deg, hsl(217 30% 12%) 12%, transparent 12.5%, transparent 87%, hsl(217 30% 12%) 87.5%),
-      linear-gradient(30deg, hsl(217 30% 12%) 12%, transparent 12.5%, transparent 87%, hsl(217 30% 12%) 87.5%),
-      linear-gradient(150deg, hsl(217 30% 12%) 12%, transparent 12.5%, transparent 87%, hsl(217 30% 12%) 87.5%),
-      linear-gradient(60deg, hsl(217 30% 10%) 25%, transparent 25.5%, transparent 75%, hsl(217 30% 10%) 75%);
+      linear-gradient(30deg, hsl(var(--muted)) 12%, transparent 12.5%, transparent 87%, hsl(var(--muted)) 87.5%),
+      linear-gradient(150deg, hsl(var(--muted)) 12%, transparent 12.5%, transparent 87%, hsl(var(--muted)) 87.5%),
+      linear-gradient(30deg, hsl(var(--muted)) 12%, transparent 12.5%, transparent 87%, hsl(var(--muted)) 87.5%),
+      linear-gradient(150deg, hsl(var(--muted)) 12%, transparent 12.5%, transparent 87%, hsl(var(--muted)) 87.5%),
+      linear-gradient(60deg, hsl(var(--secondary)) 25%, transparent 25.5%, transparent 75%, hsl(var(--secondary)) 75%);
     background-size: 80px 140px;
     background-position: 0 0, 0 0, 40px 70px, 40px 70px, 0 0;
   }
@@ -186,12 +229,22 @@
 
   /* Pulse glow */
   @keyframes pulse-glow {
-    0%, 100% { box-shadow: 0 0 20px hsl(200 30% 50% / 0.2); }
-    50% { box-shadow: 0 0 40px hsl(200 30% 50% / 0.4); }
+    0%, 100% { box-shadow: 0 0 20px hsl(var(--primary) / 0.2); }
+    50% { box-shadow: 0 0 40px hsl(var(--primary) / 0.4); }
   }
 
   .pulse-glow {
     animation: pulse-glow 3s ease-in-out infinite;
+  }
+
+  /* Stats counter animation */
+  @keyframes count-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate-count {
+    animation: count-up 0.6s ease-out forwards;
   }
 }
 
