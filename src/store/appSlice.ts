@@ -97,6 +97,18 @@ const appSlice = createSlice({
       }
     },
 
+    // Bulk price adjustment for super admin
+    adjustAllProductPrices: (state, action: PayloadAction<{ percentage: number; type: 'increase' | 'decrease' }>) => {
+      const { percentage, type } = action.payload;
+      const multiplier = type === 'increase' ? 1 + (percentage / 100) : 1 - (percentage / 100);
+      
+      state.products = state.products.map(product => ({
+        ...product,
+        price: Math.round(product.price * multiplier * 100) / 100,
+        updatedAt: new Date().toISOString().split('T')[0]
+      }));
+    },
+
     // Jeweler Product actions
     addJewelerProduct: (state, action: PayloadAction<JewelerProduct>) => {
       state.jewelerProducts.push(action.payload);
@@ -177,6 +189,7 @@ export const {
   updateJewelerShop,
   deleteJewelerShop,
   updateJewelerSettings,
+  adjustAllProductPrices,
   addJewelerProduct,
   updateJewelerProduct,
   deleteJewelerProduct,

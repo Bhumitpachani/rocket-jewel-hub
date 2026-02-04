@@ -26,6 +26,16 @@ const JewelerProductsPage = () => {
   const products = useAppSelector(state => state.app.products);
   const jewelerProducts = useAppSelector(state => state.app.jewelerProducts);
   const productVisibility = useAppSelector(state => state.app.productVisibility);
+  const shop = useAppSelector(state => state.app.jewelerShops.find(s => s.id === shopId));
+  
+  // Get pricing settings
+  const priceMarkupPercent = shop?.settings?.priceMarkupPercent ?? 0;
+  const showPriceInCatalog = shop?.settings?.showPriceInCatalog ?? false;
+
+  // Calculate marked up price
+  const getMarkedUpPrice = (basePrice: number) => {
+    return Math.round(basePrice * (1 + priceMarkupPercent / 100) * 100) / 100;
+  };
 
   // Get visible products for this shop
   const visibleProducts = useMemo(() => {
@@ -257,9 +267,15 @@ const JewelerProductsPage = () => {
                     {product.description}
                   </p>
                   <div className="flex items-center justify-between">
-                    <span className={`text-sm font-medium ${product.inStock ? 'text-green-500' : 'text-red-500'}`}>
-                      {product.inStock ? 'In Stock' : 'Out of Stock'}
-                    </span>
+                    {showPriceInCatalog ? (
+                      <span className="font-bold text-lg text-gradient">
+                        ${getMarkedUpPrice(product.price).toLocaleString()}
+                      </span>
+                    ) : (
+                      <span className={`text-sm font-medium ${product.inStock ? 'text-green-500' : 'text-red-500'}`}>
+                        {product.inStock ? 'In Stock' : 'Out of Stock'}
+                      </span>
+                    )}
                     <span className="text-sm font-medium text-primary hover:underline">
                       View Details
                     </span>
@@ -297,9 +313,15 @@ const JewelerProductsPage = () => {
                       <Badge variant="outline" className="text-xs">
                         {product.category}
                       </Badge>
-                      <span className={`text-sm font-medium ${product.inStock ? 'text-green-500' : 'text-red-500'}`}>
-                        {product.inStock ? 'In Stock' : 'Out of Stock'}
-                      </span>
+                      {showPriceInCatalog ? (
+                        <span className="font-bold text-lg text-gradient">
+                          ${getMarkedUpPrice(product.price).toLocaleString()}
+                        </span>
+                      ) : (
+                        <span className={`text-sm font-medium ${product.inStock ? 'text-green-500' : 'text-red-500'}`}>
+                          {product.inStock ? 'In Stock' : 'Out of Stock'}
+                        </span>
+                      )}
                     </div>
                     <h3 className="font-display text-xl font-semibold text-foreground mb-2">
                       {product.name}
@@ -323,12 +345,13 @@ const JewelerProductsPage = () => {
         )}
       </div>
 
-      {/* Product Details Modal - No price shown */}
+      {/* Product Details Modal - Price shown based on settings with markup */}
       <ProductDetailsModal
         product={selectedProduct}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        showPrice={false}
+        showPrice={showPriceInCatalog}
+        priceMarkupPercent={priceMarkupPercent}
       />
     </div>
   );

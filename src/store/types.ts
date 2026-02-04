@@ -45,6 +45,8 @@ export interface JewelerSettings {
   heroBannerUrl: string;
   primaryColor: string;
   accentColor: string;
+  priceMarkupPercent: number; // Percentage to add to base price
+  showPriceInCatalog: boolean; // Toggle to show/hide prices in public catalog
 }
 
 export interface JewelerShop {

@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Save, Upload, Eye } from 'lucide-react';
+import { Save, Upload, Eye, Percent, DollarSign } from 'lucide-react';
 import { useAppSelector, useAppDispatch } from '@/store';
 import { updateJewelerSettings } from '@/store/appSlice';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { Slider } from '@/components/ui/slider';
 import { useToast } from '@/hooks/use-toast';
 import { JewelerSettings } from '@/store/types';
 
@@ -32,7 +35,9 @@ const JewelerSettingsPage = () => {
     heroSubtitle: existingSettings?.heroSubtitle || 'Discover our exquisite collection of fine jewelry',
     heroBannerUrl: existingSettings?.heroBannerUrl || '',
     primaryColor: existingSettings?.primaryColor || '#1e3a5f',
-    accentColor: existingSettings?.accentColor || '#c9a961'
+    accentColor: existingSettings?.accentColor || '#c9a961',
+    priceMarkupPercent: existingSettings?.priceMarkupPercent ?? 0,
+    showPriceInCatalog: existingSettings?.showPriceInCatalog ?? false
   });
 
   const [isSaving, setIsSaving] = useState(false);
@@ -258,6 +263,71 @@ const JewelerSettingsPage = () => {
                 placeholder="Your store address"
                 rows={2}
               />
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Pricing Settings */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.45 }}
+          className="glass-card rounded-2xl p-6"
+        >
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+              <DollarSign className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <h2 className="font-display text-xl font-semibold text-foreground">
+                Pricing Settings
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                Configure how prices are displayed in your catalog
+              </p>
+            </div>
+          </div>
+          
+          <div className="space-y-6">
+            {/* Show Price Toggle */}
+            <div className="flex items-center justify-between p-4 bg-secondary/50 rounded-xl">
+              <div className="space-y-0.5">
+                <Label className="text-base font-medium">Show Prices in Catalog</Label>
+                <p className="text-sm text-muted-foreground">
+                  When enabled, prices will be visible to customers on product cards
+                </p>
+              </div>
+              <Switch
+                checked={formData.showPriceInCatalog}
+                onCheckedChange={(checked) => setFormData({ ...formData, showPriceInCatalog: checked })}
+              />
+            </div>
+
+            {/* Price Markup */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Label className="text-base font-medium">Price Markup Percentage</Label>
+                <div className="flex items-center gap-2 bg-secondary px-3 py-1.5 rounded-lg">
+                  <Percent className="w-4 h-4 text-primary" />
+                  <span className="font-semibold text-lg">{formData.priceMarkupPercent}%</span>
+                </div>
+              </div>
+              <Slider
+                value={[formData.priceMarkupPercent]}
+                onValueChange={(value) => setFormData({ ...formData, priceMarkupPercent: value[0] })}
+                max={100}
+                step={1}
+                className="w-full"
+              />
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>0%</span>
+                <span>50%</span>
+                <span>100%</span>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                This percentage will be added to the base price when displayed in your catalog.
+                For example, a $1,000 product with 15% markup will show as ${(1000 * (1 + formData.priceMarkupPercent / 100)).toLocaleString()}.
+              </p>
             </div>
           </div>
         </motion.div>
