@@ -115,7 +115,9 @@ const mockJewelerSettings: Record<string, JewelerSettings> = {
     heroSubtitle: 'Curated collection of the finest diamonds and jewelry for the discerning customer',
     heroBannerUrl: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=1920&h=600&fit=crop',
     primaryColor: '#1e3a5f',
-    accentColor: '#c9a961'
+    accentColor: '#c9a961',
+    priceMarkupPercent: 15,
+    showPriceInCatalog: false
   },
   '2': {
     shopId: '2',
@@ -129,7 +131,9 @@ const mockJewelerSettings: Record<string, JewelerSettings> = {
     heroSubtitle: 'Exceptional jewelry for life\'s most precious occasions',
     heroBannerUrl: 'https://images.unsplash.com/photo-1573408301185-9146fe634ad0?w=1920&h=600&fit=crop',
     primaryColor: '#4a1942',
-    accentColor: '#d4af37'
+    accentColor: '#d4af37',
+    priceMarkupPercent: 20,
+    showPriceInCatalog: true
   }
 };
 

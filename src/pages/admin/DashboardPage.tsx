@@ -1,9 +1,38 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useAppSelector } from '@/store';
-import { Package, Store, ShoppingCart, TrendingUp, Users, DollarSign } from 'lucide-react';
+import { useAppSelector, useAppDispatch } from '@/store';
+import { adjustAllProductPrices } from '@/store/appSlice';
+import { Package, Store, ShoppingCart, TrendingUp, Users, DollarSign, Percent, ArrowUp, ArrowDown } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Slider } from '@/components/ui/slider';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import { toast } from 'sonner';
 
 const DashboardPage = () => {
+  const dispatch = useAppDispatch();
   const { dashboardStats, products, jewelerShops } = useAppSelector((state) => state.app);
+  
+  const [isPriceDialogOpen, setIsPriceDialogOpen] = useState(false);
+  const [priceAdjustment, setPriceAdjustment] = useState(10);
+  const [adjustmentType, setAdjustmentType] = useState<'increase' | 'decrease'>('increase');
+
+  const handlePriceAdjustment = () => {
+    dispatch(adjustAllProductPrices({ percentage: priceAdjustment, type: adjustmentType }));
+    toast.success(
+      `All product prices ${adjustmentType === 'increase' ? 'increased' : 'decreased'} by ${priceAdjustment}%`
+    );
+    setIsPriceDialogOpen(false);
+    setPriceAdjustment(10);
+  };
 
   const stats = [
     {
@@ -55,10 +84,16 @@ const DashboardPage = () => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mb-8"
+        className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
       >
-        <h1 className="font-display text-3xl font-bold">Dashboard</h1>
-        <p className="text-muted-foreground">Welcome back! Here's an overview of your business.</p>
+        <div>
+          <h1 className="font-display text-3xl font-bold">Dashboard</h1>
+          <p className="text-muted-foreground">Welcome back! Here's an overview of your business.</p>
+        </div>
+        <Button onClick={() => setIsPriceDialogOpen(true)} className="shimmer gap-2">
+          <Percent className="w-4 h-4" />
+          Bulk Price Adjustment
+        </Button>
       </motion.div>
 
       {/* Stats Grid */}
@@ -149,6 +184,88 @@ const DashboardPage = () => {
           </div>
         </motion.div>
       </div>
+
+      {/* Bulk Price Adjustment Dialog */}
+      <Dialog open={isPriceDialogOpen} onOpenChange={setIsPriceDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Percent className="w-5 h-5 text-primary" />
+              Bulk Price Adjustment
+            </DialogTitle>
+            <DialogDescription>
+              Adjust prices for all {products.length} products at once. This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-6 py-4">
+            {/* Adjustment Type */}
+            <div className="flex gap-2">
+              <Button
+                variant={adjustmentType === 'increase' ? 'default' : 'outline'}
+                onClick={() => setAdjustmentType('increase')}
+                className="flex-1 gap-2"
+              >
+                <ArrowUp className="w-4 h-4" />
+                Increase
+              </Button>
+              <Button
+                variant={adjustmentType === 'decrease' ? 'default' : 'outline'}
+                onClick={() => setAdjustmentType('decrease')}
+                className="flex-1 gap-2"
+              >
+                <ArrowDown className="w-4 h-4" />
+                Decrease
+              </Button>
+            </div>
+
+            {/* Percentage Slider */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Label className="text-base">Adjustment Percentage</Label>
+                <div className="flex items-center gap-2 bg-secondary px-4 py-2 rounded-lg">
+                  <span className="font-bold text-xl text-primary">{priceAdjustment}%</span>
+                </div>
+              </div>
+              <Slider
+                value={[priceAdjustment]}
+                onValueChange={(value) => setPriceAdjustment(value[0])}
+                max={50}
+                step={1}
+                className="w-full"
+              />
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>1%</span>
+                <span>25%</span>
+                <span>50%</span>
+              </div>
+            </div>
+
+            {/* Preview */}
+            <div className="p-4 bg-secondary/50 rounded-xl space-y-2">
+              <p className="text-sm font-medium">Preview Example:</p>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">$1,000 product will become:</span>
+                <span className="font-bold text-primary">
+                  ${adjustmentType === 'increase' 
+                    ? (1000 * (1 + priceAdjustment / 100)).toLocaleString()
+                    : (1000 * (1 - priceAdjustment / 100)).toLocaleString()
+                  }
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setIsPriceDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handlePriceAdjustment} className="shimmer">
+              Apply to All Products
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

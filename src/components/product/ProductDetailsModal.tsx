@@ -11,9 +11,10 @@ interface ProductDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
   showPrice?: boolean;
+  priceMarkupPercent?: number;
 }
 
-const ProductDetailsModal = ({ product, isOpen, onClose, showPrice = false }: ProductDetailsModalProps) => {
+const ProductDetailsModal = ({ product, isOpen, onClose, showPrice = false, priceMarkupPercent = 0 }: ProductDetailsModalProps) => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   if (!product) return null;
@@ -124,8 +125,13 @@ const ProductDetailsModal = ({ product, isOpen, onClose, showPrice = false }: Pr
                 <div className="glass-card rounded-xl p-4">
                   <p className="text-sm text-muted-foreground mb-1">Price</p>
                   <p className="text-3xl font-bold text-gradient">
-                    ${product.price.toLocaleString()}
+                    ${(Math.round(product.price * (1 + priceMarkupPercent / 100) * 100) / 100).toLocaleString()}
                   </p>
+                  {priceMarkupPercent > 0 && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Includes {priceMarkupPercent}% markup
+                    </p>
+                  )}
                 </div>
               )}
 
